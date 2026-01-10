@@ -1,0 +1,351 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Currency {
+  CRC
+  USD
+  CAD
+}
+
+enum IncomeCadence {
+  MONTHLY
+  BIWEEKLY
+  WEEKLY
+  ONE_TIME
+}
+
+enum PaymentCadence {
+  MONTHLY
+  BIWEEKLY
+  WEEKLY
+}
+
+enum RateType {
+  BUY   // Compra - Bank buys foreign currency from you
+  SELL  // Venta - Bank sells foreign currency to you
+}
+
+enum Theme {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+enum Role {
+  ADMIN  // Full access: view, edit, delete users and all data
+  MOD    // Moderator: view and edit users
+  USER   // Regular user: no access to user management
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified DateTime?
+  passwordHash  String?   // Optional for OAuth users
+  image         String?   // For NextAuth OAuth providers
+  name          String?
+  avatarUrl     String?  // Path to avatar in Supabase Storage
+  role          Role     @default(USER)
+  baseCurrency  Currency @default(CRC)
+  enabledCurrencies Currency[] @default([CRC])  // Currencies user wants to track
+  theme         Theme    @default(SYSTEM)
+  accentColor   String   @default("blue")
+  locale        String   @default("es")
+  onboardingCompleted Boolean @default(false)  // Has completed onboarding wizard
+  mfaEnabled    Boolean  @default(false)       // Multi-factor auth enabled
+  mfaSecret     String?                        // TOTP secret for MFA
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  incomes           Income[]
+  recurringPayments RecurringPayment[]
+  subscriptions     Subscription[]
+  extraExpenses     ExtraExpense[]
+  variableBillTypes VariableBillType[]
+  exchangeRates     ExchangeRate[]
+  balanceSnapshots  BalanceSnapshot[]
+  accounts          Account[]
+  sessions          Session[]
+  verificationCodes VerificationCode[]
+
+  @@map("users")
+}
+
+// Verification codes for email verification and OTP sign-in
+model VerificationCode {
+  id        String   @id @default(cuid())
+  userId    String
+  code      String   // 6-digit code
+  type      VerificationType
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@index([code, type])
+  @@map("verification_codes")
+}
+
+enum VerificationType {
+  EMAIL_VERIFICATION
+  SIGN_IN
+  PASSWORD_RESET
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Income {
+  id          String        @id @default(cuid())
+  userId      String
+  name        String
+  amount      Int           // Stored in smallest unit (cents for USD/CAD, colones for CRC)
+  currency    Currency
+  cadence     IncomeCadence
+  startDate   DateTime?
+  endDate     DateTime?
+  active      Boolean       @default(true)
+  owner       String?       // Future: household member name
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  received    IncomeReceived[]
+
+  @@index([userId, active])
+  @@map("incomes")
+}
+
+model IncomeReceived {
+  id          String   @id @default(cuid())
+  incomeId    String
+  month       DateTime // Year-month of receipt
+  receivedAt  DateTime @default(now())
+  amount      Int      // May differ from expected if updated
+  currency    Currency
+  notes       String?
+
+  income      Income   @relation(fields: [incomeId], references: [id], onDelete: Cascade)
+
+  @@unique([incomeId, month])
+  @@index([incomeId])
+  @@map("income_received")
+}
+
+model RecurringPayment {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  category    String
+  amount      Int      // Stored in smallest unit
+  currency    Currency
+  cadence     PaymentCadence
+  dueDay      Int?     // 1-31 for monthly
+  dueDateRule String?  // For weekly/biweekly (e.g., "first Monday")
+  startDate   DateTime?
+  endDate     DateTime?
+  active      Boolean  @default(true)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentInstances PaymentInstance[]
+
+  @@index([userId, active])
+  @@map("recurring_payments")
+}
+
+model Subscription {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  amount      Int
+  currency    Currency
+  cadence     PaymentCadence @default(MONTHLY)
+  dueDay      Int?     // Usually monthly
+  startDate   DateTime?
+  endDate     DateTime?
+  active      Boolean  @default(true)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentInstances PaymentInstance[]
+
+  @@index([userId, active])
+  @@map("subscriptions")
+}
+
+model PaymentInstance {
+  id                String   @id @default(cuid())
+  recurringPaymentId String?
+  subscriptionId    String?
+  periodStart       DateTime // Start of the billing period (handles monthly, weekly, biweekly)
+  paidAt            DateTime @default(now())
+  amount            Int      // May differ from recurring payment if updated
+  currency          Currency
+  convertedAmountCRC Int?    // Cached conversion (optional)
+  rateId            String?  // Exchange rate used for conversion
+  notes             String?
+
+  recurringPayment  RecurringPayment? @relation(fields: [recurringPaymentId], references: [id], onDelete: Cascade)
+  subscription      Subscription?     @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  exchangeRate      ExchangeRate?     @relation(fields: [rateId], references: [id])
+
+  @@unique([recurringPaymentId, periodStart])
+  @@unique([subscriptionId, periodStart])
+  @@index([recurringPaymentId])
+  @@index([subscriptionId])
+  @@map("payment_instances")
+}
+
+model ExtraExpense {
+  id                String    @id @default(cuid())
+  userId            String
+  date              DateTime
+  description       String
+  category          String
+  amount            Int
+  currency          Currency
+  convertedAmountCRC Int?     // Cached conversion
+  rateId            String?    // Exchange rate used
+  notes             String?
+  receiptUrl        String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exchangeRate ExchangeRate? @relation(fields: [rateId], references: [id])
+
+  @@index([userId, date])
+  @@index([userId, category])
+  @@map("extra_expenses")
+}
+
+model VariableBillType {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String   // "Water", "Power", "Internet"
+  category    String   @default("Utilities")
+  currency    Currency @default(CRC)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries VariableBillEntry[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("variable_bill_types")
+}
+
+model VariableBillEntry {
+  id                String   @id @default(cuid())
+  variableBillTypeId String
+  month             DateTime // Year-month
+  amount            Int
+  currency          Currency
+  convertedAmountCRC Int?
+  rateId            String?
+  paidAt            DateTime?
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  variableBillType VariableBillType @relation(fields: [variableBillTypeId], references: [id], onDelete: Cascade)
+  exchangeRate     ExchangeRate?    @relation(fields: [rateId], references: [id])
+
+  @@unique([variableBillTypeId, month])
+  @@index([variableBillTypeId])
+  @@map("variable_bill_entries")
+}
+
+model ExchangeRate {
+  id            String   @id @default(cuid())
+  userId       String?  // Optional: user-specific rates, or global
+  fromCurrency Currency
+  toCurrency   Currency
+  rate         Decimal  @db.Decimal(18, 6) // High precision
+  rateType     RateType @default(BUY) // BUY (compra) or SELL (venta)
+  effectiveDate DateTime
+  source        String?  // "manual", "api", etc.
+  createdAt     DateTime @default(now())
+
+  user            User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentInstances PaymentInstance[]
+  extraExpenses    ExtraExpense[]
+  variableBillEntries VariableBillEntry[]
+
+  @@index([fromCurrency, toCurrency, rateType, effectiveDate])
+  @@index([userId])
+  @@map("exchange_rates")
+}
+
+model BalanceSnapshot {
+  id          String   @id @default(cuid())
+  userId      String
+  currency    Currency
+  amount      Int      // Balance in smallest unit
+  accountType String?  // "cash", "bank", "savings", etc.
+  notes       String?
+  snapshotDate DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, snapshotDate])
+  @@map("balance_snapshots")
+}
+
+
