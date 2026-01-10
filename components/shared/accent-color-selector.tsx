@@ -19,6 +19,7 @@ const ACCENT_COLORS = [
   { name: "violet", color: "hsl(262.1 83.3% 57.8%)", label: "Violet" },
   { name: "rose", color: "hsl(346.8 77.2% 49.8%)", label: "Rose" },
   { name: "amber", color: "hsl(43.3 96.4% 56.3%)", label: "Amber" },
+  { name: "coral", color: "hsl(0 84% 60%)", label: "Coral ✦" },
 ] as const
 
 type AccentColor = typeof ACCENT_COLORS[number]["name"]

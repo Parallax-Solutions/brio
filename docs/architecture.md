@@ -2,7 +2,7 @@
 
 ## High-Level Architecture
 
-The Costa Rica Multi-Currency Budget App is built as a full-stack Next.js application using the App Router pattern, with a clear separation between server and client components.
+The Brio is built as a full-stack Next.js application using the App Router pattern, with a clear separation between server and client components.
 
 ---
 

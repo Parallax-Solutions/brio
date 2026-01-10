@@ -1,6 +1,6 @@
 # Data Model
 
-This document explains the Prisma schema design, relationships, and important constraints for the Costa Rica Multi-Currency Budget App.
+This document explains the Prisma schema design, relationships, and important constraints for the Brio.
 
 ---
 

@@ -1,6 +1,6 @@
 # Theming and Internationalization
 
-This document explains the theme system, accent color implementation, and internationalization (i18n) strategy for the Costa Rica Multi-Currency Budget App.
+This document explains the theme system, accent color implementation, and internationalization (i18n) strategy for the Brio.
 
 ---
 

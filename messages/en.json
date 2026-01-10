@@ -21,6 +21,8 @@
     "update": "Update"
   },
   "navigation": {
+    "appName": "Brio",
+    "tagline": "Finances with spirit",
     "menu": "Menu",
     "dashboard": "Dashboard",
     "income": "Income",
@@ -48,7 +50,8 @@
     "signingIn": "Signing in...",
     "signOut": "Sign Out",
     "signUp": "Sign up",
-    "appName": "Budget App",
+    "appName": "Brio",
+    "tagline": "Finances with spirit",
     "welcomeBack": "Welcome to Budget App",
     "dontHaveAccount": "Don't have an account?",
     "enterCredentials": "Enter your credentials to access your account",
@@ -448,6 +451,7 @@
     "violet": "Violet",
     "rose": "Rose",
     "amber": "Amber",
+    "coral": "Coral ✦",
     "language": "Language",
     "languageDesc": "Choose your preferred language",
     "english": "English",

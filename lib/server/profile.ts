@@ -14,7 +14,7 @@ const updateProfileSchema = z.object({
 
 const updatePreferencesSchema = z.object({
   theme: z.nativeEnum(Theme),
-  accentColor: z.enum(['blue', 'emerald', 'violet', 'rose', 'amber']),
+  accentColor: z.enum(['blue', 'emerald', 'violet', 'rose', 'amber', 'coral']),
   locale: z.enum(['en', 'es']),
   baseCurrency: z.nativeEnum(Currency),
 });
@@ -291,7 +291,7 @@ export async function updateTheme(data: UpdateThemeInput) {
 }
 
 const updateAccentColorSchema = z.object({
-  accentColor: z.enum(['blue', 'emerald', 'violet', 'rose', 'amber']),
+  accentColor: z.enum(['blue', 'emerald', 'violet', 'rose', 'amber', 'coral']),
 });
 
 export type UpdateAccentColorInput = z.infer<typeof updateAccentColorSchema>;

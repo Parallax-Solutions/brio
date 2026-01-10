@@ -1,6 +1,19 @@
 import { PaymentCadence } from '@prisma/client';
 
 /**
+ * Compare two dates by their UTC date components (year, month, day), ignoring time.
+ * This is useful for comparing period start dates that may have microsecond precision differences
+ * between JavaScript Dates and database timestamps.
+ */
+export function isSameUTCDate(date1: Date, date2: Date): boolean {
+  return (
+    date1.getUTCFullYear() === date2.getUTCFullYear() &&
+    date1.getUTCMonth() === date2.getUTCMonth() &&
+    date1.getUTCDate() === date2.getUTCDate()
+  );
+}
+
+/**
  * Calculate the current billing period start date based on payment cadence.
  * 
  * - MONTHLY: First day of the current month

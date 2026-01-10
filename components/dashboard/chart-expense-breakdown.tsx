@@ -96,6 +96,18 @@ export function ChartExpenseBreakdown({
     }).format(value)
   }, [locale, currency])
 
+  // Compact format for inside the donut (symbol + abbreviated number)
+  const formatCompact = React.useCallback((value: number) => {
+    const symbol = currency === "CRC" ? "₡" : currency === "USD" ? "$" : "C$"
+    if (value >= 1000000) {
+      return `${symbol}${(value / 1000000).toFixed(1)}M`
+    }
+    if (value >= 1000) {
+      return `${symbol}${(value / 1000).toFixed(0)}K`
+    }
+    return `${symbol}${value}`
+  }, [currency])
+
   // Find the largest expense category
   const largestCategory = chartData.reduce((prev, current) => 
     (prev.value > current.value) ? prev : current, { name: "", value: 0 })
@@ -201,15 +213,15 @@ export function ChartExpenseBreakdown({
                         >
                           <tspan
                             x={viewBox.cx}
-                            y={viewBox.cy}
-                            className="fill-foreground text-xl font-bold"
+                            y={(viewBox.cy || 0) - 6}
+                            className="fill-foreground text-base font-bold"
                           >
-                            {formatCurrency(totalExpenses)}
+                            {formatCompact(totalExpenses)}
                           </tspan>
                           <tspan
                             x={viewBox.cx}
-                            y={(viewBox.cy || 0) + 20}
-                            className="fill-muted-foreground text-xs"
+                            y={(viewBox.cy || 0) + 12}
+                            className="fill-muted-foreground text-[10px]"
                           >
                             {t("total")}
                           </tspan>

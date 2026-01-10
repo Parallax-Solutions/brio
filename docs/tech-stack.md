@@ -1,6 +1,6 @@
 # Tech Stack
 
-This document outlines the technology choices for the Costa Rica Multi-Currency Budget App and the rationale behind each decision.
+This document outlines the technology choices for the Brio and the rationale behind each decision.
 
 ---
 

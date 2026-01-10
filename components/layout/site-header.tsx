@@ -48,7 +48,7 @@ export function SiteHeader() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/dashboard">
-                Budget App
+                {t("appName")}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

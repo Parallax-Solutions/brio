@@ -84,6 +84,7 @@ const ACCENT_COLORS = [
   { name: 'violet', color: 'hsl(262.1 83.3% 57.8%)' },
   { name: 'rose', color: 'hsl(346.8 77.2% 49.8%)' },
   { name: 'amber', color: 'hsl(43.3 96.4% 56.3%)' },
+  { name: 'coral', color: 'hsl(0 84% 60%)' },
 ] as const;
 
 export default function ProfilePage() {
@@ -182,7 +183,7 @@ export default function ProfilePage() {
     setIsSavingPreferences(true);
     const result = await updatePreferences({
       theme: selectedTheme,
-      accentColor: accentColor as 'blue' | 'emerald' | 'violet' | 'rose' | 'amber',
+      accentColor: accentColor as 'blue' | 'emerald' | 'violet' | 'rose' | 'amber' | 'coral',
       locale: locale as 'en' | 'es',
       baseCurrency,
     });

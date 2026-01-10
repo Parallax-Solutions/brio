@@ -1,6 +1,6 @@
 # Accessibility
 
-This document outlines the accessibility (a11y) principles, WCAG alignment, and testing checklist for the Costa Rica Multi-Currency Budget App.
+This document outlines the accessibility (a11y) principles, WCAG alignment, and testing checklist for the Brio.
 
 ---
 

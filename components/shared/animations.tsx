@@ -215,7 +215,7 @@ export function HoverScale({ children, scale = 1.02, className }: HoverScaleProp
   );
 }
 
-// Card hover effect
+// Card hover effect with glow
 interface AnimatedCardProps {
   children: ReactNode;
   className?: string;
@@ -229,14 +229,68 @@ export function AnimatedCard({ children, className, delay = 0 }: AnimatedCardPro
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay, ease: 'easeOut' }}
       whileHover={{ 
-        y: -2,
-        boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.2)',
+        y: -4,
         transition: { duration: 0.2 }
       }}
       className={className}
     >
       {children}
     </motion.div>
+  );
+}
+
+// Glow effect wrapper
+interface GlowWrapperProps {
+  children: ReactNode;
+  className?: string;
+  glowColor?: string;
+  intensity?: 'subtle' | 'medium' | 'strong';
+}
+
+export function GlowWrapper({ children, className, intensity = 'subtle' }: GlowWrapperProps) {
+  const glowStyles = {
+    subtle: 'hover:shadow-lg hover:shadow-primary/10',
+    medium: 'hover:shadow-xl hover:shadow-primary/20',
+    strong: 'hover:shadow-2xl hover:shadow-primary/30',
+  };
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.01 }}
+      transition={{ duration: 0.2 }}
+      className={`transition-shadow duration-300 ${glowStyles[intensity]} ${className}`}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// Floating glow orb for decorative purposes
+interface FloatingOrbProps {
+  className?: string;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+export function FloatingOrb({ className, size = 'md' }: FloatingOrbProps) {
+  const sizes = {
+    sm: 'h-32 w-32',
+    md: 'h-64 w-64',
+    lg: 'h-96 w-96',
+  };
+
+  return (
+    <motion.div
+      animate={{
+        y: [0, -10, 0],
+        opacity: [0.5, 0.8, 0.5],
+      }}
+      transition={{
+        duration: 4,
+        repeat: Infinity,
+        ease: 'easeInOut',
+      }}
+      className={`rounded-full bg-primary/10 blur-3xl pointer-events-none ${sizes[size]} ${className}`}
+    />
   );
 }
 

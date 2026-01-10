@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { getServerAuthSession } from '@/lib/get-server-session';
 import { db } from '@/lib/config/db';
 import { getMonthRange } from '@/lib/utils/dates';
-import { getCurrentPeriodStart } from '@/lib/utils/periods';
+import { getCurrentPeriodStart, isSameUTCDate } from '@/lib/utils/periods';
 import { convertCurrencyWithInfo, buildRateKey, RateMap, ConversionResult, toDisplayAmount } from '@/lib/utils/money';
 import { BudgetCards } from '@/components/dashboard/budget-cards';
 import { ChartAreaInteractive, ChartDataPoint } from '@/components/dashboard/chart-area-interactive';
@@ -138,7 +138,7 @@ export default async function DashboardPage() {
     const isPaid = paymentInstances.some(
       (instance) =>
         instance.recurringPaymentId === payment.id &&
-        instance.periodStart.getTime() === currentPeriodStart.getTime()
+        isSameUTCDate(new Date(instance.periodStart), currentPeriodStart)
     );
     if (isPaid) {
       paidRecurringIds.push(payment.id);
@@ -151,7 +151,7 @@ export default async function DashboardPage() {
     const isPaid = paymentInstances.some(
       (instance) =>
         instance.subscriptionId === sub.id &&
-        instance.periodStart.getTime() === currentPeriodStart.getTime()
+        isSameUTCDate(new Date(instance.periodStart), currentPeriodStart)
     );
     if (isPaid) {
       paidSubscriptionIds.push(sub.id);

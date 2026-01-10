@@ -21,6 +21,8 @@
     "update": "Actualizar"
   },
   "navigation": {
+    "appName": "Brio",
+    "tagline": "Finanzas con espíritu",
     "menu": "Menú",
     "dashboard": "Panel de Control",
     "income": "Ingresos",
@@ -48,7 +50,8 @@
     "signingIn": "Iniciando sesión...",
     "signOut": "Cerrar Sesión",
     "signUp": "Registrarse",
-    "appName": "Budget App",
+    "appName": "Brio",
+    "tagline": "Finanzas con espíritu",
     "welcomeBack": "Bienvenido a Budget App",
     "dontHaveAccount": "¿No tienes cuenta?",
     "enterCredentials": "Ingresa tus credenciales para acceder a tu cuenta",
@@ -448,6 +451,7 @@
     "violet": "Violeta",
     "rose": "Rosa",
     "amber": "Ámbar",
+    "coral": "Coral ✦",
     "language": "Idioma",
     "languageDesc": "Elige tu idioma preferido",
     "english": "Inglés",

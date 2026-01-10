@@ -20,8 +20,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Budget App - Costa Rica",
-  description: "Multi-currency budget management for Costa Rica",
+  title: "Brio — Finances with Spirit",
+  description: "Multi-currency budget management app. Manage your money with energy, live your life with spirit.",
 };
 
 // Script to prevent accent color flash - runs before React hydrates
@@ -29,7 +29,7 @@ const accentColorScript = `
   (function() {
     try {
       var accent = localStorage.getItem('accent-color');
-      if (accent && ['blue', 'emerald', 'violet', 'rose', 'amber'].includes(accent)) {
+      if (accent && ['blue', 'emerald', 'violet', 'rose', 'amber', 'coral'].includes(accent)) {
         document.documentElement.setAttribute('data-accent', accent);
       }
     } catch (e) {}

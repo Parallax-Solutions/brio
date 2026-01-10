@@ -5,7 +5,7 @@ import { db } from '@/lib/config/db';
 import { getServerAuthSession } from '@/lib/get-server-session';
 import { revalidatePath } from 'next/cache';
 import { Currency, PaymentCadence } from '@prisma/client';
-import { getCurrentPeriodStart } from '@/lib/utils/periods';
+import { getCurrentPeriodStart, isSameUTCDate } from '@/lib/utils/periods';
 
 const subscriptionSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -178,7 +178,7 @@ export async function getSubscriptionInstancesForCurrentPeriods(subscriptionIds:
     const isPaid = instances.some(
       (instance) =>
         instance.subscriptionId === subId &&
-        instance.periodStart.getTime() === currentPeriodStart.getTime()
+        isSameUTCDate(new Date(instance.periodStart), currentPeriodStart)
     );
     
     paidMap[subId] = isPaid;

@@ -1,6 +1,6 @@
 # Product Scope
 
-This document explicitly defines what is **in-scope** and **out-of-scope** for the Costa Rica Multi-Currency Budget App. This prevents scope creep and ensures focus on core value delivery.
+This document explicitly defines what is **in-scope** and **out-of-scope** for the Brio. This prevents scope creep and ensures focus on core value delivery.
 
 ---
 

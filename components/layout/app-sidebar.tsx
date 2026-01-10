@@ -5,7 +5,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import {
-  BanknoteIcon,
   CreditCardIcon,
   HomeIcon,
   ReceiptIcon,
@@ -19,6 +18,7 @@ import {
   PiggyBankIcon,
   Sparkles,
   Users,
+  Zap,
 } from "lucide-react"
 
 import {
@@ -150,13 +150,13 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
             <SidebarMenuButton size="lg" asChild className="group/logo">
               <Link href="/dashboard" onClick={handleLinkClick}>
                 <div className="relative flex aspect-square size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 transition-all duration-300 group-hover/logo:shadow-xl group-hover/logo:shadow-primary/30 group-hover/logo:scale-105">
-                  <BanknoteIcon className="size-5" />
+                  <Zap className="size-5" />
                   <Sparkles className="absolute -top-1 -right-1 size-3 text-primary-foreground/80 animate-pulse" />
                 </div>
                 <div className="grid flex-1 text-left leading-tight group-data-collapsible-icon:hidden">
-                  <span className="truncate text-base font-bold tracking-tight">Budget App</span>
+                  <span className="truncate text-base font-bold tracking-tight">{t("appName")}</span>
                   <span className="text-muted-foreground truncate text-xs font-medium">
-                    Costa Rica 🇨🇷
+                    {t("tagline")}
                   </span>
                 </div>
               </Link>

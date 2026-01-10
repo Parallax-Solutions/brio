@@ -1,4 +1,4 @@
-import { BanknoteIcon, Sparkles } from 'lucide-react';
+import { Zap, Sparkles } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,10 +14,23 @@ export default async function OnboardingLayout({
   // So if we reach here, the user is authenticated and needs to complete onboarding
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Background pattern */}
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      {/* Ambient background effects */}
+      <div className="pointer-events-none fixed inset-0">
+        {/* Primary gradient glow - top right */}
+        <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-primary/10 blur-3xl" />
+        {/* Secondary gradient glow - bottom left */}
+        <div className="absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full bg-primary/5 blur-3xl" />
+        {/* Center accent orb */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-primary/[0.03] blur-3xl" />
+      </div>
+      
+      {/* Subtle star pattern overlay */}
+      <div className="pointer-events-none fixed inset-0 bg-stars opacity-40 dark:opacity-60" />
+      
+      {/* Grid pattern */}
       <div 
-        className="pointer-events-none fixed inset-0 opacity-[0.02]"
+        className="pointer-events-none fixed inset-0 opacity-[0.02] dark:opacity-[0.03]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }}
@@ -27,11 +40,11 @@ export default async function OnboardingLayout({
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center">
           <div className="relative mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-xl shadow-primary/25">
-            <BanknoteIcon className="h-8 w-8" />
+            <Zap className="h-8 w-8" />
             <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-primary-foreground/80 animate-pulse" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Budget App</h1>
-          <p className="text-muted-foreground text-sm">Costa Rica 🇨🇷</p>
+          <h1 className="text-2xl font-bold tracking-tight">Brio</h1>
+          <p className="text-muted-foreground text-sm">Finances with spirit ✦</p>
         </div>
 
         {/* Content */}

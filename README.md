@@ -1,6 +1,8 @@
-# Costa Rica Multi-Currency Budget App
+# ⚡ Brio — Finances with Spirit
 
-A production-ready multi-currency budgeting web application for Costa Rica, built with Next.js, TypeScript, and PostgreSQL.
+A production-ready multi-currency budgeting web application, built with Next.js, TypeScript, and PostgreSQL. Manage your money with energy, live your life with spirit.
+
+> **Brio** (noun): Vivacity, vigor, spirit, enthusiasm. From Italian/Spanish, also used in music ("con brio" = with spirit).
 
 ## Features
 

@@ -18,7 +18,7 @@ export {
 } from './money';
 export type { RateMap, CurrencyConfig, ConversionResult, RateTypeValue } from './money';
 export { formatDate, formatMonth, getMonthRange, getYearMonth, parseYearMonth, isCurrentMonth, getDaysUntil, isOverdue } from './dates';
-export { getCurrentPeriodStart, getPeriodEnd, isInPeriod, getPeriodDisplayText } from './periods';
+export { getCurrentPeriodStart, getPeriodEnd, isInPeriod, getPeriodDisplayText, isSameUTCDate } from './periods';
 export { 
   hasPermission, 
   hasAllPermissions, 

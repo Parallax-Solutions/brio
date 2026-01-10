@@ -1,6 +1,6 @@
 # Authentication Strategy
 
-This document explains the authentication flow, protected routes, and future extensibility for the Costa Rica Multi-Currency Budget App.
+This document explains the authentication flow, protected routes, and future extensibility for the Brio.
 
 ---
 

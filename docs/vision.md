@@ -2,7 +2,7 @@
 
 ## Long-Term Goals
 
-The Costa Rica Multi-Currency Budget App aims to become the go-to personal finance management tool for multi-currency households in Costa Rica and similar markets.
+The Brio aims to become the go-to personal finance management tool for multi-currency households in Costa Rica and similar markets.
 
 ## Future Features
 

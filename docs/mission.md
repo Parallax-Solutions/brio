@@ -2,7 +2,7 @@
 
 ## Why This Product Exists
 
-The Costa Rica Multi-Currency Budget App exists to solve the financial management challenges faced by individuals and families living in Costa Rica who deal with multiple currencies in their daily financial lives.
+The Brio exists to solve the financial management challenges faced by individuals and families living in Costa Rica who deal with multiple currencies in their daily financial lives.
 
 ## Who It Is For
 

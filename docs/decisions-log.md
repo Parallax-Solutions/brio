@@ -1,6 +1,6 @@
 # Decisions Log
 
-This document records Architecture Decision Records (ADRs) for the Costa Rica Multi-Currency Budget App. Each decision includes context, the decision made, alternatives considered, and consequences.
+This document records Architecture Decision Records (ADRs) for the Brio. Each decision includes context, the decision made, alternatives considered, and consequences.
 
 ---
 

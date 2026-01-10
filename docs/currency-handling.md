@@ -1,6 +1,6 @@
 # Currency Handling
 
-This document explains the multi-currency strategy, conversion rules, precision decisions, and edge cases for the Costa Rica Multi-Currency Budget App.
+This document explains the multi-currency strategy, conversion rules, precision decisions, and edge cases for the Brio.
 
 ---
 

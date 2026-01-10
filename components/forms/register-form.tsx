@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { GalleryVerticalEnd, Loader2 } from 'lucide-react';
+import { Zap, Loader2 } from 'lucide-react';
 
 import { cn } from '@/lib/utils/cn';
 import { Button } from '@/components/ui/button';
@@ -98,12 +98,12 @@ export function RegisterForm({
               href="/"
               className="flex flex-col items-center gap-2 font-medium"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-md">
-                <GalleryVerticalEnd className="size-6" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25">
+                <Zap className="size-5" />
               </div>
-              <span className="sr-only">{t('appName')}</span>
+              <span className="text-xl font-bold tracking-tight">{t('appName')}</span>
             </Link>
-            <h1 className="text-xl font-bold">{t('createAccount')}</h1>
+            <h1 className="text-lg font-medium text-muted-foreground">{t('createAccount')}</h1>
             <div className="text-center text-sm text-muted-foreground">
               {t('alreadyHaveAccount')}{' '}
               <Link href="/login" className="underline underline-offset-4 hover:text-primary">

@@ -2,7 +2,7 @@
 
 ## Phased Development Approach
 
-This roadmap outlines the development phases for the Costa Rica Multi-Currency Budget App, clearly marking what's being built now, next, and later.
+This roadmap outlines the development phases for the Brio, clearly marking what's being built now, next, and later.
 
 ---
 

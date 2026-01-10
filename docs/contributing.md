@@ -1,6 +1,6 @@
 # Contributing
 
-This document provides guidelines for contributing to the Costa Rica Multi-Currency Budget App.
+This document provides guidelines for contributing to the Brio.
 
 ---
 
