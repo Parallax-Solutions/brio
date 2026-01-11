@@ -23,14 +23,14 @@ Brio uses a simple but effective deployment strategy:
 
 ### Environments
 
-| Environment | Branch | URL | Purpose |
-|-------------|--------|-----|---------|
-| Development | `dev` | `brio-git-dev-*.vercel.app` | Testing new features |
-| Production | `main` | `brio.parallaxsolutions.dev` | Live application |
+| Environment | Branch | URL                          | Purpose              |
+| ----------- | ------ | ---------------------------- | -------------------- |
+| Development | `dev`  | `brio-git-dev-*.vercel.app`  | Testing new features |
+| Production  | `main` | `brio.parallaxsolutions.dev` | Live application     |
 
 ## Deployment Architecture
 
-```
+```text
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────┐
 │  GitHub Repo    │────▶│  GitHub Actions  │────▶│  CI Checks  │
 │  (dev/main)     │     │  (on push/PR)    │     │  (lint/ts)  │
@@ -44,6 +44,7 @@ Brio uses a simple but effective deployment strategy:
 ```
 
 **Key Points:**
+
 - Vercel automatically deploys on every push (no GitHub Actions needed for deployment)
 - GitHub Actions run CI checks (linting, type checking)
 - Database migrations run during Vercel build via `prisma migrate deploy`
@@ -60,6 +61,7 @@ The CI workflow (`.github/workflows/ci.yml`) runs on every push and PR:
 ### CI Status Badges
 
 Add to your README:
+
 ```markdown
 ![CI](https://github.com/Parallax-Solutions/brio/actions/workflows/ci.yml/badge.svg)
 ```
@@ -67,6 +69,7 @@ Add to your README:
 ### Required Checks for Branch Protection
 
 When setting up branch protection for `main`, require these checks:
+
 - `Code Quality` (from CI workflow)
 
 ## Development Deployment
@@ -74,6 +77,7 @@ When setting up branch protection for `main`, require these checks:
 ### Automatic Dev Deployments
 
 Every push to the `dev` branch automatically:
+
 1. Triggers Vercel deployment
 2. Creates a preview URL
 3. Runs database migrations
@@ -100,6 +104,7 @@ git push origin feature/my-feature
 ### Preview URLs
 
 Each commit to `dev` gets a unique preview URL:
+
 - `brio-git-dev-{username}.vercel.app`
 - `brio-{hash}-{username}.vercel.app`
 
@@ -171,15 +176,16 @@ git push origin v0.1.1
 
 Brio follows SemVer: `MAJOR.MINOR.PATCH[-PRERELEASE]`
 
-| Type | When to Use | Example |
-|------|-------------|---------|
-| Patch | Bug fixes, no API changes | `0.1.0` → `0.1.1` |
+| Type  | When to Use                       | Example           |
+| ----- | --------------------------------- | ----------------- |
+| Patch | Bug fixes, no API changes         | `0.1.0` → `0.1.1` |
 | Minor | New features, backward compatible | `0.1.0` → `0.2.0` |
-| Major | Breaking changes | `0.1.0` → `1.0.0` |
+| Major | Breaking changes                  | `0.1.0` → `1.0.0` |
 
 ### Current Version
 
 The current version is tracked in two files:
+
 - `package.json` (authoritative)
 - `VERSION` (for quick reference)
 
@@ -242,11 +248,13 @@ git commit -m "chore: add migration for new feature"
 ### CI Workflow Fails
 
 **Lint Errors:**
+
 ```bash
 pnpm lint:fix
 ```
 
 **Type Errors:**
+
 ```bash
 pnpm type-check
 ```
@@ -258,6 +266,7 @@ pnpm type-check
 3. Check database connection
 
 **Common Issues:**
+
 - Missing `DATABASE_URL` → Add in Vercel project settings
 - Missing `NEXTAUTH_SECRET` → Generate with `openssl rand -base64 32`
 - Prisma client not generated → Should auto-generate during build
@@ -267,6 +276,7 @@ pnpm type-check
 **Symptoms:** Build fails with "database not found" or connection errors
 
 **Solutions:**
+
 1. Verify DATABASE_URL format
 2. Check database is accessible from Vercel (IP whitelisting)
 3. Ensure SSL mode is correct: `?sslmode=require`
@@ -274,6 +284,7 @@ pnpm type-check
 ### Release Workflow Not Visible
 
 The "Create Release" workflow uses manual dispatch. To see it:
+
 1. Go to **Actions** tab
 2. Look in the left sidebar under "All workflows"
 3. Or run it once - then it appears in the list
@@ -281,6 +292,7 @@ The "Create Release" workflow uses manual dispatch. To see it:
 ### Preview Deployment Issues
 
 **PR previews not working:**
+
 1. Check Vercel GitHub integration is connected
 2. Verify branch is not in Vercel's "Ignored Build Step"
 3. Check Vercel project settings

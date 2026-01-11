@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,14 +10,11 @@ import {
   DollarSign, 
   PiggyBank, 
   CheckCircle2,
-  ArrowRight,
   Loader2,
 } from 'lucide-react';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { useTranslations } from '@/lib/i18n/context';
 import { getOnboardingStatus, completeOnboarding } from '@/lib/server/onboarding';
 
 import { VerifyEmailStep } from './steps/verify-email';
@@ -35,26 +32,29 @@ const STEPS = [
 export default function OnboardingPage() {
   const router = useRouter();
   const { update: updateSession } = useSession();
-  const t = useTranslations('onboarding');
   const [currentStep, setCurrentStep] = useState<string>('verify-email');
   const [isLoading, setIsLoading] = useState(true);
   const [isCompleting, setIsCompleting] = useState(false);
+  const hasLoadedRef = useRef(false);
 
   useEffect(() => {
-    loadStatus();
-  }, []);
+    if (hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
 
-  const loadStatus = async () => {
-    const status = await getOnboardingStatus();
-    if (status) {
-      if (status.onboardingCompleted) {
-        router.push('/dashboard');
-        return;
+    const loadStatus = async () => {
+      const status = await getOnboardingStatus();
+      if (status) {
+        if (status.onboardingCompleted) {
+          router.push('/dashboard');
+          return;
+        }
+        setCurrentStep(status.currentStep);
       }
-      setCurrentStep(status.currentStep);
-    }
-    setIsLoading(false);
-  };
+      setIsLoading(false);
+    };
+
+    loadStatus();
+  }, [router]);
 
   const handleStepComplete = async () => {
     const currentIndex = STEPS.findIndex(s => s.id === currentStep);

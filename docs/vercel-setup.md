@@ -154,7 +154,7 @@ The `vercel.json` file configures:
 
 GitHub Actions automatically comments on pull requests with preview URLs:
 
-```
+```text
 🚀 Preview deployment ready: https://brio-preview-123.vercel.app
 ```
 
@@ -162,7 +162,7 @@ GitHub Actions automatically comments on pull requests with preview URLs:
 
 Production deployments post comments on releases:
 
-```
+```text
 🎉 Production deployment v1.0.0 ready: https://brio.parallaxsolutions.dev
 ✅ Database migrated
 🚀 Live in production
@@ -192,7 +192,8 @@ Enable error tracking in Vercel:
 #### Build Fails
 
 **Symptoms**: Build fails in Vercel
-**Solutions**:
+**Solutions:**
+
 - Check build logs for specific errors
 - Verify environment variables are set
 - Ensure database is accessible
@@ -201,7 +202,8 @@ Enable error tracking in Vercel:
 #### Database Connection Issues
 
 **Symptoms**: Application can't connect to database
-**Solutions**:
+**Solutions:**
+
 - Verify DATABASE_URL format
 - Check database firewall rules
 - Ensure SSL mode is correct for your provider
@@ -210,7 +212,8 @@ Enable error tracking in Vercel:
 #### Preview Deployments Not Triggering
 
 **Symptoms**: No preview deployment for PR
-**Solutions**:
+**Solutions:**
+
 - Check if PR is from fork (may need approval)
 - Verify branch name doesn't match ignored patterns
 - Check Vercel project settings
@@ -218,7 +221,8 @@ Enable error tracking in Vercel:
 ### Environment Variable Issues
 
 **Symptoms**: App works locally but fails in Vercel
-**Solutions**:
+**Solutions:**
+
 - Ensure all required env vars are set in Vercel
 - Check variable names match exactly
 - Verify sensitive data isn't logged

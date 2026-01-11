@@ -2,7 +2,7 @@
 
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { ColumnDef, RowSelectionState, PaginationState } from '@tanstack/react-table';
-import { Plus, Trash2, MoreHorizontal, Pencil, Shield, ShieldCheck, User as UserIcon, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Trash2, MoreHorizontal, Pencil, Shield, ShieldCheck, User as UserIcon, CheckCircle, Clock } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -98,7 +98,6 @@ export default function UsersPage() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [currentUserRole, setCurrentUserRole] = useState<Role | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
@@ -153,7 +152,6 @@ export default function UsersPage() {
     });
   }, [data, search, roleFilter]);
 
-  const canEdit = currentUserRole && hasPermission(currentUserRole, 'users:edit');
   const canDelete = currentUserRole && hasPermission(currentUserRole, 'users:delete');
 
   // Delete handler

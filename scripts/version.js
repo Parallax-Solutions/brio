@@ -89,29 +89,31 @@ function main() {
       console.log(getCurrentVersion());
       break;
 
-    case 'bump':
+    case 'bump': {
       if (args.length < 2) {
         console.error('Usage: node scripts/version.js bump <type>');
         process.exit(1);
       }
       const bumpType = args[1];
       const currentVersion = getCurrentVersion();
-      const newVersion = bumpVersion(currentVersion, bumpType);
-      updateVersionFile(newVersion);
-      updatePackageJson(newVersion);
-      console.log(`🚀 Version bumped from ${currentVersion} to ${newVersion}`);
+      const bumpedVersion = bumpVersion(currentVersion, bumpType);
+      updateVersionFile(bumpedVersion);
+      updatePackageJson(bumpedVersion);
+      console.log(`🚀 Version bumped from ${currentVersion} to ${bumpedVersion}`);
       break;
+    }
 
-    case 'set':
+    case 'set': {
       if (args.length < 2) {
         console.error('Usage: node scripts/version.js set <version>');
         process.exit(1);
       }
-      const newVersion = args[1];
-      updateVersionFile(newVersion);
-      updatePackageJson(newVersion);
-      console.log(`✅ Version set to ${newVersion}`);
+      const setVersion = args[1];
+      updateVersionFile(setVersion);
+      updatePackageJson(setVersion);
+      console.log(`✅ Version set to ${setVersion}`);
       break;
+    }
 
     default:
       console.error('Unknown command. Use: current, bump, or set');

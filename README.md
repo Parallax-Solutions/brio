@@ -11,10 +11,10 @@ A production-ready multi-currency budgeting web application, built with Next.js,
 
 ## Environments
 
-| Environment | URL | Branch | Status |
-|-------------|-----|--------|--------|
-| 🟢 Production | [brio.parallaxsolutions.dev](https://brio.parallaxsolutions.dev) | `main` | Live |
-| 🔵 Development | [Preview URL](https://brio-git-dev-gustavoro19s-projects.vercel.app) | `dev` | Testing |
+| Environment    | URL                                                                  | Branch | Status  |
+| -------------- | -------------------------------------------------------------------- | ------ | ------- |
+| 🟢 Production  | [brio.parallaxsolutions.dev](https://brio.parallaxsolutions.dev)     | `main` | Live    |
+| 🔵 Development | [Preview URL](https://brio-git-dev-gustavoro19s-projects.vercel.app) | `dev`  | Testing |
 
 ## Features
 
@@ -203,17 +203,20 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## Available Scripts
 
 ### Development
+
 - `pnpm dev` - Start development server
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 
 ### Code Quality
+
 - `pnpm lint` - Run ESLint
 - `pnpm lint:fix` - Fix ESLint issues automatically
 - `pnpm type-check` - Run TypeScript type checking
 - `pnpm test` - Run tests (placeholder)
 
 ### Database
+
 - `pnpm db:generate` - Generate Prisma Client
 - `pnpm db:push` - Push schema changes to database
 - `pnpm db:migrate` - Run database migrations
@@ -221,6 +224,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - `pnpm db:studio` - Open Prisma Studio
 
 ### Versioning
+
 - `pnpm version` - Show current version and help
 - `pnpm version current` - Display current version
 - `pnpm version bump <type>` - Bump version (patch/minor/major)
@@ -228,7 +232,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Project Structure
 
-```
+```text
 app/
   (auth)/              # Public auth routes
     login/
@@ -329,7 +333,7 @@ Comprehensive documentation is available in the `/docs` directory:
 - **Languages**: Spanish (default), English
 - Preferences stored in database
 
-## Development
+## Development Guide
 
 ### Adding a New Page
 
@@ -349,10 +353,10 @@ Comprehensive documentation is available in the `/docs` directory:
 
 Brio uses automated CI/CD with GitHub Actions and Vercel for seamless deployments.
 
-### Environments
+### Deployment Environments
 
-- **Development** (`dev` branch): Auto-deploys to https://brio-dev.vercel.app
-- **Production** (`main` branch): Versioned releases to https://brio.parallaxsolutions.dev
+- **Development** (`dev` branch): Auto-deploys to <https://brio-dev.vercel.app>
+- **Production** (`main` branch): Versioned releases to <https://brio.parallaxsolutions.dev>
 
 ### Version Management
 
@@ -381,11 +385,12 @@ pnpm version set 1.0.0-beta
 ```
 
 **When to use locally:**
+
 - Quick version checks during development
 - Manual version bumps before committing
 - Setting pre-release versions (alpha, beta, rc)
 
-#### GitHub Actions Release Workflow
+### GitHub Actions Release Workflow
 
 For automated, versioned releases to production:
 
@@ -396,18 +401,19 @@ For automated, versioned releases to production:
 5. Workflow creates a release PR automatically
 
 **When to use:**
+
 - Creating official releases
 - Deploying to production with version tags
 - Automated changelog generation
 
-### CI/CD Pipeline
+## CI/CD Pipeline
 
-| Trigger | Action | Environment |
-|---------|--------|-------------|
-| Push to `dev` | Vercel auto-deploys | Preview |
-| Push to `main` | Vercel auto-deploys | Production |
-| PR to any branch | CI checks (lint, type-check) | - |
-| Create Release workflow | Creates version PR | - |
+| Trigger                 | Action                       | Environment |
+| ----------------------- | ---------------------------- | ----------- |
+| Push to `dev`           | Vercel auto-deploys          | Preview     |
+| Push to `main`          | Vercel auto-deploys          | Production  |
+| PR to any branch        | CI checks (lint, type-check) | -           |
+| Create Release workflow | Creates version PR           | -           |
 
 ### Development Deployment
 
@@ -415,13 +421,15 @@ Push to `dev` branch → Automatic deployment with database migration.
 
 ### Production Deployment
 
-**Option 1: Automated (Recommended)**
+#### Option 1: Automated (Recommended)
+
 1. **Create Release**: Use GitHub Actions "Create Release" workflow
 2. **Version Bump**: Select patch/minor/major version increment
 3. **Merge PR**: Approve and merge the auto-generated release PR
 4. **Tag Release**: Create GitHub release with version tag
 
-**Option 2: Manual**
+#### Option 2: Manual
+
 1. Bump version locally: `pnpm version bump minor`
 2. Commit and push to `main`
 3. Create GitHub release with tag
