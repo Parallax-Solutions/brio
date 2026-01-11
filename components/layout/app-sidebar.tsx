@@ -240,6 +240,13 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter className="relative">
+        {/* Version display */}
+        <div className="mx-3 mb-1 flex items-center justify-center group-data-[collapsible=icon]:hidden">
+          <span className="text-[10px] font-medium text-muted-foreground/50">
+            v{process.env.NEXT_PUBLIC_APP_VERSION}
+          </span>
+        </div>
+        
         {/* Decorative line */}
         <div className="mx-3 mb-2 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         

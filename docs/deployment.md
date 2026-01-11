@@ -110,38 +110,53 @@ Each commit to `dev` gets a unique preview URL:
 
 ## Production Deployment
 
-### Release Process
+### Automatic Release Process
 
-Production deployments happen when code is merged to `main`. Use the release workflow for versioned releases:
+Production deployments are fully automated. When a PR is merged to `main`:
 
-#### Step 1: Create Release (GitHub Actions)
+1. **Auto Release** workflow triggers
+2. Version is automatically bumped based on:
+   - PR labels: `major`, `minor`, or `patch`
+   - PR title: `feat:` → minor, `fix:` → patch, `breaking:` → major
+   - Default: `minor` (for dev → main merges)
+3. `package.json` and `VERSION` files are updated
+4. Git tag is created (e.g., `v0.2.0`)
+5. GitHub Release is published automatically
+6. Vercel deploys to production
+
+### Release Workflow
+
+#### Step 1: Create PR from dev to main
+
+1. Go to GitHub → **Pull requests** → **New pull request**
+2. Set **base:** `main` ← **compare:** `dev`
+3. Add a descriptive title (this appears in release notes)
+4. Optionally add labels: `major`, `minor`, or `patch`
+5. Click **Create pull request**
+
+#### Step 2: Review and Merge
+
+1. Review the changes
+2. Get approval (if branch protection is enabled)
+3. **Merge the PR**
+
+#### Step 3: Automatic (No Action Needed)
+
+After merge, the workflow automatically:
+
+- Bumps version → commits to main
+- Creates git tag → pushes tag
+- Creates GitHub Release with changelog
+- Vercel deploys to production
+
+### Manual Release (Optional)
+
+If you need more control, use the **Create Release** workflow:
 
 1. Go to **Actions** → **Create Release**
 2. Click **Run workflow**
-3. Select:
-   - **Version type**: `patch`, `minor`, or `major`
-   - **Pre-release tag** (optional): e.g., `beta`, `rc1`
-   - **Release notes**: Description of changes
-4. Click **Run workflow**
-
-#### Step 2: Review and Merge PR
-
-1. The workflow creates a PR from `release/vX.Y.Z` to `main`
-2. Review the version changes
-3. Get approval (if branch protection is enabled)
-4. Merge the PR
-
-#### Step 3: Create GitHub Release
-
-1. Go to **Releases** → **Create a new release**
-2. Create tag: `vX.Y.Z` (matches the version)
-3. Title: `v{version}` or descriptive name
-4. Add release notes (changelog)
-5. Click **Publish release**
-
-#### Step 4: Automatic Deployment
-
-Vercel automatically deploys `main` to production after the merge.
+3. Select version type and add release notes
+4. Merge the created PR
 
 ### Quick Production Fix (Hotfix)
 
