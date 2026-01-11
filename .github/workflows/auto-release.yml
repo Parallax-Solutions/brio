@@ -124,8 +124,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout main branch
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Get version
         id: version
@@ -145,6 +148,7 @@ jobs:
             exit 0
           fi
           
+          # Tag the actual commit on main
           git tag "v$VERSION"
           git push origin "v$VERSION"
           gh release create "v$VERSION" --title "v$VERSION" --generate-notes
@@ -152,6 +156,6 @@ jobs:
       - name: Summary
         run: |
           echo "## 🚀 Release v${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Git tag created" >> $GITHUB_STEP_SUMMARY
+          echo "- Git tag created on main" >> $GITHUB_STEP_SUMMARY
           echo "- GitHub Release published" >> $GITHUB_STEP_SUMMARY
           echo "- Vercel deploying..." >> $GITHUB_STEP_SUMMARY
