@@ -32,6 +32,7 @@ interface ChartExpenseBreakdownProps {
   extraExpensesTotal: number
   currency?: Currency
   isLoading?: boolean
+  periodStart?: Date
 }
 
 const COLORS = {
@@ -46,10 +47,13 @@ export function ChartExpenseBreakdown({
   extraExpensesTotal,
   currency = "CRC",
   isLoading,
+  periodStart,
 }: ChartExpenseBreakdownProps) {
   const t = useTranslations("dashboard")
   const locale = useLocale()
-  const currentMonth = formatMonth(new Date(), locale === "es" ? "es-CR" : "en-US")
+  // Use the server-provided period start to ensure consistency with data
+  const periodDate = periodStart ? new Date(periodStart) : new Date()
+  const currentMonth = formatMonth(periodDate, locale === "es" ? "es-CR" : "en-US")
 
   const totalExpenses = recurringTotal + subscriptionsTotal + extraExpensesTotal
 

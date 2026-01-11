@@ -38,6 +38,7 @@ interface ChartIncomeSourcesProps {
   totalIncome: number
   currency?: Currency
   isLoading?: boolean
+  periodStart?: Date
 }
 
 // Vibrant color palette for multiple income sources
@@ -57,10 +58,13 @@ export function ChartIncomeSources({
   totalIncome,
   currency = "CRC",
   isLoading,
+  periodStart,
 }: ChartIncomeSourcesProps) {
   const t = useTranslations("dashboard")
   const locale = useLocale()
-  const currentMonth = formatMonth(new Date(), locale === "es" ? "es-CR" : "en-US")
+  // Use the server-provided period start to ensure consistency with data
+  const periodDate = periodStart ? new Date(periodStart) : new Date()
+  const currentMonth = formatMonth(periodDate, locale === "es" ? "es-CR" : "en-US")
 
   const chartData = React.useMemo(() => 
     incomes.map((income, index) => ({
