@@ -1,8 +1,20 @@
 # ⚡ Brio — Finances with Spirit
 
+[![CI](https://github.com/Parallax-Solutions/brio/actions/workflows/ci.yml/badge.svg)](https://github.com/Parallax-Solutions/brio/actions/workflows/ci.yml)
+[![Production](https://img.shields.io/badge/Production-brio.parallaxsolutions.dev-00C853?logo=vercel&logoColor=white)](https://brio.parallaxsolutions.dev)
+[![Development](https://img.shields.io/badge/Development-Preview-blue?logo=vercel&logoColor=white)](https://brio-git-dev-gustavoro19s-projects.vercel.app)
+[![Version](https://img.shields.io/badge/version-0.1.0--alpha-orange)](https://github.com/Parallax-Solutions/brio/releases)
+
 A production-ready multi-currency budgeting web application, built with Next.js, TypeScript, and PostgreSQL. Manage your money with energy, live your life with spirit.
 
 > **Brio** (noun): Vivacity, vigor, spirit, enthusiasm. From Italian/Spanish, also used in music ("con brio" = with spirit).
+
+## Environments
+
+| Environment | URL | Branch | Status |
+|-------------|-----|--------|--------|
+| 🟢 Production | [brio.parallaxsolutions.dev](https://brio.parallaxsolutions.dev) | `main` | Live |
+| 🔵 Development | [Preview URL](https://brio-git-dev-gustavoro19s-projects.vercel.app) | `dev` | Testing |
 
 ## Features
 
@@ -190,18 +202,29 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Available Scripts
 
+### Development
 - `pnpm dev` - Start development server
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
+
+### Code Quality
 - `pnpm lint` - Run ESLint
+- `pnpm lint:fix` - Fix ESLint issues automatically
 - `pnpm type-check` - Run TypeScript type checking
 - `pnpm test` - Run tests (placeholder)
-- `pnpm version` - Version management utilities
+
+### Database
 - `pnpm db:generate` - Generate Prisma Client
 - `pnpm db:push` - Push schema changes to database
 - `pnpm db:migrate` - Run database migrations
 - `pnpm db:seed` - Seed database with sample data
 - `pnpm db:studio` - Open Prisma Studio
+
+### Versioning
+- `pnpm version` - Show current version and help
+- `pnpm version current` - Display current version
+- `pnpm version bump <type>` - Bump version (patch/minor/major)
+- `pnpm version set <version>` - Set specific version
 
 ## Project Structure
 
@@ -252,10 +275,14 @@ prisma/
   schema.prisma        # Database schema
   migrations/          # Database migrations
   seed.ts              # Seed script
+scripts/
+  version.js           # Version management utility
 docs/                  # Documentation
 messages/              # i18n translations (en.json, es.json)
 types/                 # TypeScript type definitions
 hooks/                 # Custom React hooks
+.github/
+  workflows/           # GitHub Actions (CI, Release)
 ```
 
 ## Documentation
@@ -329,17 +356,58 @@ Brio uses automated CI/CD with GitHub Actions and Vercel for seamless deployment
 
 ### Version Management
 
-Current version: **0.1.0-alpha**
+Brio uses [Semantic Versioning](https://semver.org/) (SemVer): `MAJOR.MINOR.PATCH[-PRERELEASE]`
+
+**Current version**: `0.1.0-alpha`
+
+#### Version Script (`scripts/version.js`)
+
+A local utility for managing versions across `package.json` and `VERSION` files:
 
 ```bash
-# Check version
+# Show current version and help
 pnpm version
 
-# Version commands
-pnpm version:patch    # Bug fixes (0.1.0 → 0.1.1)
-pnpm version:minor    # New features (0.1.0 → 0.2.0)
-pnpm version:major    # Breaking changes (0.1.0 → 1.0.0)
+# Check current version only
+pnpm version current
+
+# Bump version (updates both package.json and VERSION file)
+pnpm version bump patch    # 0.1.0 → 0.1.1 (bug fixes)
+pnpm version bump minor    # 0.1.0 → 0.2.0 (new features)
+pnpm version bump major    # 0.1.0 → 1.0.0 (breaking changes)
+
+# Set specific version
+pnpm version set 1.0.0-beta
 ```
+
+**When to use locally:**
+- Quick version checks during development
+- Manual version bumps before committing
+- Setting pre-release versions (alpha, beta, rc)
+
+#### GitHub Actions Release Workflow
+
+For automated, versioned releases to production:
+
+1. Go to **Actions** → **Create Release**
+2. Click **Run workflow**
+3. Select version type (`patch`, `minor`, `major`)
+4. Optionally add pre-release tag and notes
+5. Workflow creates a release PR automatically
+
+**When to use:**
+- Creating official releases
+- Deploying to production with version tags
+- Automated changelog generation
+
+### CI/CD Pipeline
+
+| Trigger | Action | Environment |
+|---------|--------|-------------|
+| Push to `dev` | Vercel auto-deploys | Preview |
+| Push to `main` | Vercel auto-deploys | Production |
+| PR to any branch | CI checks (lint, type-check) | - |
+| Create Release workflow | Creates version PR | - |
 
 ### Development Deployment
 
@@ -347,18 +415,24 @@ Push to `dev` branch → Automatic deployment with database migration.
 
 ### Production Deployment
 
+**Option 1: Automated (Recommended)**
 1. **Create Release**: Use GitHub Actions "Create Release" workflow
 2. **Version Bump**: Select patch/minor/major version increment
 3. **Merge PR**: Approve and merge the auto-generated release PR
-4. **Publish Release**: Create GitHub release to trigger production deployment
+4. **Tag Release**: Create GitHub release with version tag
+
+**Option 2: Manual**
+1. Bump version locally: `pnpm version bump minor`
+2. Commit and push to `main`
+3. Create GitHub release with tag
 
 See `docs/deployment.md` for detailed deployment instructions.
 
-### Manual Production Deployment
+### Self-Hosted Deployment
 
 1. Set up PostgreSQL database
-2. Set environment variables
-3. Run migrations: `pnpm db:migrate`
+2. Set environment variables (see `.env.example`)
+3. Run migrations: `pnpm prisma migrate deploy`
 4. Build: `pnpm build`
 5. Start: `pnpm start`
 

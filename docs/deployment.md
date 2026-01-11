@@ -1,208 +1,187 @@
 # Deployment Guide
 
-This guide covers the complete deployment process for Brio, including development, staging, and production environments.
+This guide covers the complete deployment process for Brio, including development and production environments.
 
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Prerequisites](#prerequisites)
-3. [Environment Setup](#environment-setup)
+2. [Deployment Architecture](#deployment-architecture)
+3. [GitHub Actions CI](#github-actions-ci)
 4. [Development Deployment](#development-deployment)
 5. [Production Deployment](#production-deployment)
 6. [Version Management](#version-management)
-7. [Troubleshooting](#troubleshooting)
+7. [Database Migrations](#database-migrations)
+8. [Troubleshooting](#troubleshooting)
 
 ## Overview
 
-Brio uses a Git-flow inspired deployment strategy with two main environments:
+Brio uses a simple but effective deployment strategy:
 
-- **Development** (`dev` branch): For testing features and bug fixes
-- **Production** (`main` branch): Live production environment
+- **CI/CD**: GitHub Actions for code quality checks
+- **Hosting**: Vercel for automatic deployments
+- **Database**: Neon PostgreSQL (or any PostgreSQL provider)
 
-### Branch Strategy
+### Environments
+
+| Environment | Branch | URL | Purpose |
+|-------------|--------|-----|---------|
+| Development | `dev` | `brio-git-dev-*.vercel.app` | Testing new features |
+| Production | `main` | `brio.parallaxsolutions.dev` | Live application |
+
+## Deployment Architecture
 
 ```
-dev (development)
-├── feature/* (feature branches)
-└── main (production via releases)
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────┐
+│  GitHub Repo    │────▶│  GitHub Actions  │────▶│  CI Checks  │
+│  (dev/main)     │     │  (on push/PR)    │     │  (lint/ts)  │
+└────────┬────────┘     └──────────────────┘     └─────────────┘
+         │
+         ▼
+┌─────────────────┐     ┌──────────────────┐
+│  Vercel Git     │────▶│  Vercel Build    │
+│  Integration    │     │  & Deploy        │
+└─────────────────┘     └──────────────────┘
 ```
 
-- All development happens on `dev` branch or feature branches
-- Production releases are created from `main` branch only
-- `main` branch is protected and only accepts merges from release PRs
+**Key Points:**
+- Vercel automatically deploys on every push (no GitHub Actions needed for deployment)
+- GitHub Actions run CI checks (linting, type checking)
+- Database migrations run during Vercel build via `prisma migrate deploy`
 
-## Prerequisites
+## GitHub Actions CI
 
-### Required Accounts & Access
+### What CI Does
 
-1. **GitHub Repository**: Admin access to configure branch protection and environments
-2. **Vercel Account**: With access to deploy projects
-3. **Database**: PostgreSQL database (Neon, Supabase, or similar)
-4. **Email Service**: Resend account for email verification
-5. **OAuth Providers**: Google OAuth configured
+The CI workflow (`.github/workflows/ci.yml`) runs on every push and PR:
 
-### Required Secrets
+1. **Lint**: Checks code style with ESLint
+2. **Type Check**: Validates TypeScript types
 
-Set these in GitHub repository secrets and environment-specific secrets:
+### CI Status Badges
 
-#### Repository Secrets (Global)
-```
-GITHUB_TOKEN (automatically provided)
+Add to your README:
+```markdown
+![CI](https://github.com/Parallax-Solutions/brio/actions/workflows/ci.yml/badge.svg)
 ```
 
-#### Development Environment
-```
-DEV_DATABASE_URL=postgresql://...
-VERCEL_TOKEN=vercel_token_here
-VERCEL_ORG_ID=your_org_id
-VERCEL_DEV_PROJECT_ID=dev_project_id
-```
+### Required Checks for Branch Protection
 
-#### Production Environment
-```
-DATABASE_URL=postgresql://...
-VERCEL_TOKEN=vercel_token_here
-VERCEL_ORG_ID=your_org_id
-VERCEL_PROJECT_ID=production_project_id
-```
-
-## Environment Setup
-
-### 1. GitHub Environments
-
-1. Go to **Settings** → **Environments** in your repository
-2. Create `development` environment:
-   - Allow deployments from `dev` branch
-   - No required reviewers
-3. Create `production` environment:
-   - Allow deployments from `main` branch
-   - Add required reviewers (maintainers)
-   - Set wait timer to 0 minutes
-
-### 2. Branch Protection
-
-Configure branch protection for `main` branch:
-
-1. Go to **Settings** → **Branches**
-2. Add rule for `main` branch:
-   - ✅ Require PR reviews (1 reviewer)
-   - ✅ Require status checks (CI tests must pass)
-   - ✅ Require branches to be up to date
-   - ✅ Include administrators
-   - ❌ Allow force pushes
-   - ❌ Allow deletions
-
-### 3. Vercel Projects
-
-1. Create two Vercel projects:
-   - `brio-dev` for development
-   - `brio` for production
-
-2. Configure environment variables in each project (see `.env.example`)
+When setting up branch protection for `main`, require these checks:
+- `Code Quality` (from CI workflow)
 
 ## Development Deployment
 
-Development deployments happen automatically when code is pushed to the `dev` branch.
+### Automatic Dev Deployments
 
-### Process
+Every push to the `dev` branch automatically:
+1. Triggers Vercel deployment
+2. Creates a preview URL
+3. Runs database migrations
 
-1. **Develop**: Make changes on feature branches or directly on `dev`
-2. **Test**: Push to `dev` branch
-3. **Auto-deploy**: GitHub Actions automatically:
-   - Runs tests and linting
-   - Migrates development database
-   - Deploys to Vercel dev environment
-   - Comments deployment URL on the commit
+### Development Workflow
 
-### Manual Development Deployment
+```bash
+# 1. Create feature branch from dev
+git checkout dev
+git pull origin dev
+git checkout -b feature/my-feature
 
-If needed, you can trigger a development deployment manually:
+# 2. Make changes and commit
+git add .
+git commit -m "feat: add new feature"
 
-1. Go to **Actions** → **Deploy to Dev** workflow
-2. Click **Run workflow**
-3. The workflow will deploy the current `dev` branch
+# 3. Push and create PR to dev
+git push origin feature/my-feature
+# Create PR on GitHub
 
-### Development URLs
+# 4. After PR is merged, dev auto-deploys
+```
 
-- **Application**: https://brio-dev.vercel.app
-- **Database**: Development database instance
+### Preview URLs
+
+Each commit to `dev` gets a unique preview URL:
+- `brio-git-dev-{username}.vercel.app`
+- `brio-{hash}-{username}.vercel.app`
 
 ## Production Deployment
 
-Production deployments require creating a release, which triggers automated deployment.
-
 ### Release Process
 
-#### Option 1: Automated Release (Recommended)
+Production deployments happen when code is merged to `main`. Use the release workflow for versioned releases:
 
-1. **Prepare Release**:
-   ```bash
-   # Switch to dev branch
-   git checkout dev
-   git pull origin dev
-   ```
+#### Step 1: Create Release (GitHub Actions)
 
-2. **Trigger Release Workflow**:
-   - Go to **Actions** → **Create Release** workflow
-   - Click **Run workflow**
-   - Select version bump type: `patch`, `minor`, or `major`
-   - Add release notes (optional)
-   - Click **Run workflow**
+1. Go to **Actions** → **Create Release**
+2. Click **Run workflow**
+3. Select:
+   - **Version type**: `patch`, `minor`, or `major`
+   - **Pre-release tag** (optional): e.g., `beta`, `rc1`
+   - **Release notes**: Description of changes
+4. Click **Run workflow**
 
-3. **Review Release PR**:
-   - GitHub creates a PR from `release/vX.Y.Z` to `main`
-   - Review the changes
-   - Approve and merge the PR
+#### Step 2: Review and Merge PR
 
-4. **Create GitHub Release**:
-   - After merging, go to **Releases**
-   - Click **Create a new release**
-   - Use tag `vX.Y.Z` (matches the version)
-   - Copy release notes from the PR
-   - Click **Publish release**
+1. The workflow creates a PR from `release/vX.Y.Z` to `main`
+2. Review the version changes
+3. Get approval (if branch protection is enabled)
+4. Merge the PR
 
-5. **Auto-deploy**: GitHub Actions automatically:
-   - Runs final tests
-   - Migrates production database
-   - Deploys to Vercel production
-   - Comments deployment URL
+#### Step 3: Create GitHub Release
 
-#### Option 2: Manual Release
+1. Go to **Releases** → **Create a new release**
+2. Create tag: `vX.Y.Z` (matches the version)
+3. Title: `v{version}` or descriptive name
+4. Add release notes (changelog)
+5. Click **Publish release**
 
-1. **Version Bump**:
-   ```bash
-   # Bump version locally
-   pnpm version minor  # or patch/major
-   git add package.json VERSION
-   git commit -m "Bump version to X.Y.Z"
-   ```
+#### Step 4: Automatic Deployment
 
-2. **Create Release Branch**:
-   ```bash
-   git checkout -b release/vX.Y.Z
-   git push origin release/vX.Y.Z
-   ```
+Vercel automatically deploys `main` to production after the merge.
 
-3. **Create Pull Request**:
-   - Create PR from `release/vX.Y.Z` to `main`
-   - Get approval and merge
+### Quick Production Fix (Hotfix)
 
-4. **Create GitHub Release**:
-   - Follow steps 4-5 from Option 1
+For urgent fixes:
 
-### Production URLs
+```bash
+# 1. Create hotfix branch from main
+git checkout main
+git pull origin main
+git checkout -b hotfix/critical-fix
 
-- **Application**: https://brio.parallaxsolutions.dev
-- **Database**: Production database instance
+# 2. Make fix and bump patch version
+# ... make changes ...
+npm version patch --no-git-tag-version
+git add .
+git commit -m "fix: critical bug fix"
+
+# 3. Push and create PR to main
+git push origin hotfix/critical-fix
+# Create PR on GitHub, get approval, merge
+
+# 4. Tag the release
+git checkout main
+git pull origin main
+git tag v0.1.1
+git push origin v0.1.1
+```
 
 ## Version Management
 
-Brio uses semantic versioning (SemVer): `MAJOR.MINOR.PATCH`
+### Semantic Versioning
+
+Brio follows SemVer: `MAJOR.MINOR.PATCH[-PRERELEASE]`
+
+| Type | When to Use | Example |
+|------|-------------|---------|
+| Patch | Bug fixes, no API changes | `0.1.0` → `0.1.1` |
+| Minor | New features, backward compatible | `0.1.0` → `0.2.0` |
+| Major | Breaking changes | `0.1.0` → `1.0.0` |
 
 ### Current Version
 
-- **Current**: 0.1.0-alpha
-- **Next**: 0.2.0 (when ready for first stable release)
+The current version is tracked in two files:
+- `package.json` (authoritative)
+- `VERSION` (for quick reference)
 
 ### Version Commands
 
@@ -210,132 +189,120 @@ Brio uses semantic versioning (SemVer): `MAJOR.MINOR.PATCH`
 # Check current version
 pnpm version
 
-# Bump version types
-pnpm version:patch    # 1.0.0 → 1.0.1
-pnpm version:minor    # 1.0.0 → 1.1.0
-pnpm version:major    # 1.0.0 → 2.0.0
+# Manual version bumps (local)
+pnpm version:patch
+pnpm version:minor
+pnpm version:major
 
-# Custom version management
-pnpm version set 1.2.3
-pnpm version bump patch
+# Or use npm directly
+npm version patch --no-git-tag-version
 ```
 
-### Release Types
+## Database Migrations
 
-- **Patch** (`0.1.0` → `0.1.1`): Bug fixes, no breaking changes
-- **Minor** (`0.1.0` → `0.2.0`): New features, backward compatible
-- **Major** (`0.1.0` → `1.0.0`): Breaking changes
+### How Migrations Run
 
-## Database Management
+Migrations are handled automatically during Vercel builds:
 
-### Development Database
+```json
+// package.json
+{
+  "scripts": {
+    "build": "prisma generate && prisma migrate deploy && next build"
+  }
+}
+```
 
-- Auto-migrated on every `dev` branch push
-- Seeded with test data
-- Can be reset if needed
+### Manual Migration (Production)
 
-### Production Database
-
-- Migrated only on releases
-- Contains live user data
-- Backups recommended before major changes
-
-### Database Commands
+If you need to run migrations manually:
 
 ```bash
-# Generate Prisma client
-pnpm db:generate
+# 1. Get production DATABASE_URL from Vercel
+vercel env pull .env.production.local
 
-# Create and apply migration
+# 2. Run migration
+DATABASE_URL="your-production-url" pnpm prisma migrate deploy
+```
+
+### Creating New Migrations
+
+```bash
+# 1. Update schema.prisma
+# 2. Create migration
 pnpm db:migrate
 
-# Reset database (development only)
-pnpm db:push --force-reset
-
-# Seed database
-pnpm db:seed
-
-# Open Prisma Studio
-pnpm db:studio
+# 3. Commit migration files
+git add prisma/migrations
+git commit -m "chore: add migration for new feature"
 ```
 
 ## Troubleshooting
 
-### Common Issues
+### CI Workflow Fails
 
-#### 1. Deployment Fails
+**Lint Errors:**
+```bash
+pnpm lint:fix
+```
 
-**Symptoms**: GitHub Actions workflow fails
-**Solutions**:
-- Check workflow logs for specific errors
-- Verify environment secrets are set correctly
-- Ensure database is accessible
-- Check Vercel project configuration
+**Type Errors:**
+```bash
+pnpm type-check
+```
 
-#### 2. Database Migration Errors
+### Vercel Build Fails
 
-**Symptoms**: Migration fails in production
-**Solutions**:
-- Test migrations locally first
-- Backup production database
-- Check migration files for syntax errors
-- Verify database permissions
+1. Check Vercel deployment logs
+2. Verify environment variables are set
+3. Check database connection
 
-#### 3. Branch Protection Blocks Merge
+**Common Issues:**
+- Missing `DATABASE_URL` → Add in Vercel project settings
+- Missing `NEXTAUTH_SECRET` → Generate with `openssl rand -base64 32`
+- Prisma client not generated → Should auto-generate during build
 
-**Symptoms**: Cannot merge PR to main
-**Solutions**:
-- Ensure all status checks pass
-- Get required reviews
-- Resolve merge conflicts
-- Update branch with latest main
+### Database Connection Issues
 
-#### 4. Version Mismatch
+**Symptoms:** Build fails with "database not found" or connection errors
 
-**Symptoms**: VERSION file and package.json don't match
-**Solutions**:
-- Use `pnpm version` commands instead of manual edits
-- Run `pnpm version set X.Y.Z` to sync both files
+**Solutions:**
+1. Verify DATABASE_URL format
+2. Check database is accessible from Vercel (IP whitelisting)
+3. Ensure SSL mode is correct: `?sslmode=require`
 
-### Getting Help
+### Release Workflow Not Visible
 
-1. Check GitHub Actions logs for detailed error messages
-2. Review Vercel deployment logs
-3. Check database connection and permissions
-4. Verify all secrets and environment variables
+The "Create Release" workflow uses manual dispatch. To see it:
+1. Go to **Actions** tab
+2. Look in the left sidebar under "All workflows"
+3. Or run it once - then it appears in the list
 
-### Rollback Procedures
+### Preview Deployment Issues
 
-#### Development Rollback
-1. Revert the commit on `dev` branch
-2. Push the revert commit
-3. Deployment will auto-rollback
+**PR previews not working:**
+1. Check Vercel GitHub integration is connected
+2. Verify branch is not in Vercel's "Ignored Build Step"
+3. Check Vercel project settings
 
-#### Production Rollback
-1. Create a new release with a patch version
-2. Include rollback changes in the release
-3. Deploy following normal production process
+## Best Practices
 
-## Monitoring
+### Before Merging to Main
 
-### Health Checks
+1. ✅ All CI checks pass
+2. ✅ Tested on dev/preview environment
+3. ✅ Version bumped appropriately
+4. ✅ Migrations tested locally
+5. ✅ Release notes prepared
 
-- **Application**: Check if https://brio.parallaxsolutions.dev loads
-- **Database**: Verify database connections work
-- **Authentication**: Test login flows
-- **Email**: Verify email verification works
+### After Production Deployment
 
-### Logs
+1. ✅ Verify deployment at production URL
+2. ✅ Test critical user flows
+3. ✅ Check error monitoring (if configured)
+4. ✅ Monitor for issues
 
-- **GitHub Actions**: Repository → Actions
-- **Vercel**: Project dashboard → Functions/Deployments
-- **Database**: Check provider logs (Neon, Supabase, etc.)
+### Rollback Procedure
 
-## Security Considerations
-
-- Never commit secrets to code
-- Use environment-specific secrets
-- Rotate secrets regularly
-- Limit Vercel project access
-- Use branch protection rules
-- Require reviews for production deployments
+1. **Vercel Rollback**: Go to Deployments → Find last working deployment → "Promote to Production"
+2. **Code Rollback**: Revert commit on main → Push → Vercel auto-deploys
