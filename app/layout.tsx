@@ -8,6 +8,8 @@ import { SessionProvider } from "@/components/providers/session-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { getServerAuthSession } from "@/lib/get-server-session";
 import { db } from "@/lib/config/db";
+import { Analytics } from '@vercel/analytics/next';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -78,6 +80,7 @@ export default async function RootLayout({
           >
             <I18nProvider locale={locale} messages={messages}>
               {children}
+              <Analytics />
               <Toaster />
             </I18nProvider>
           </ThemeProvider>
