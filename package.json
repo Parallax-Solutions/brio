@@ -1,6 +1,6 @@
 {
   "name": "brio",
-  "version": "0.1.0-alpha",
+  "version": "0.2.0",
   "private": true,
   "packageManager": "pnpm@10.27.0",
   "scripts": {
@@ -19,7 +19,8 @@
     "version": "node scripts/version.js",
     "version:patch": "npm version patch --no-git-tag-version",
     "version:minor": "npm version minor --no-git-tag-version",
-    "version:major": "npm version major --no-git-tag-version"
+    "version:major": "npm version major --no-git-tag-version",
+    "release": "bash scripts/release.sh"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.6.1",

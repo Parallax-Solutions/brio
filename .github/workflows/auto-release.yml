@@ -2,37 +2,52 @@ name: Auto Release
 
 on:
   pull_request:
-    types: [closed]
+    types: [opened, synchronize, labeled, closed]
     branches: [main]
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
-  auto-release:
-    name: Bump Version & Release
-    if: github.event.pull_request.merged == true
+  bump-version:
+    name: Bump Version in PR
+    # Only run on open PRs from dev branch
+    if: |
+      github.event.action != 'closed' && 
+      github.head_ref == 'dev'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.head_ref }}
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.27.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          cache: 'pnpm'
+
+      - name: Check if version already bumped
+        id: check
+        run: |
+          git fetch origin main
+          MAIN_VERSION=$(git show origin/main:package.json | node -p "JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8')).version")
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          
+          echo "Main version: $MAIN_VERSION"
+          echo "Current version: $CURRENT_VERSION"
+          
+          if [ "$MAIN_VERSION" != "$CURRENT_VERSION" ]; then
+            echo "already_bumped=true" >> $GITHUB_OUTPUT
+          else
+            echo "already_bumped=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Determine version bump type
+        if: steps.check.outputs.already_bumped == 'false'
         id: bump_type
         run: |
           PR_TITLE="${{ github.event.pull_request.title }}"
@@ -54,16 +69,11 @@ jobs:
             echo "type=minor" >> $GITHUB_OUTPUT
           fi
 
-      - name: Get current version
-        id: current_version
-        run: |
-          CURRENT_VERSION=$(node -p "require('./package.json').version.replace(/-.*$/, '')")
-          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-
       - name: Calculate new version
+        if: steps.check.outputs.already_bumped == 'false'
         id: new_version
         run: |
-          CURRENT="${{ steps.current_version.outputs.version }}"
+          CURRENT=$(node -p "require('./package.json').version.replace(/-.*$/, '')")
           TYPE="${{ steps.bump_type.outputs.type }}"
           IFS='.' read -ra PARTS <<< "$CURRENT"
           MAJOR=${PARTS[0]}
@@ -76,42 +86,76 @@ jobs:
           esac
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Update version files
+      - name: Bump version
+        if: steps.check.outputs.already_bumped == 'false'
         run: |
           NEW_VERSION="${{ steps.new_version.outputs.version }}"
           npm version $NEW_VERSION --no-git-tag-version
           echo "$NEW_VERSION" > VERSION
 
-      - name: Commit and push version bump
+      - name: Commit version bump
+        if: steps.check.outputs.already_bumped == 'false'
         run: |
           NEW_VERSION="${{ steps.new_version.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add package.json VERSION
-          git commit -m "chore: bump version to $NEW_VERSION [skip ci]"
-          git push origin main
+          git commit -m "chore: bump version to $NEW_VERSION"
+          git push
+
+      - name: Comment on PR
+        if: steps.check.outputs.already_bumped == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 **Version bumped to ${{ steps.new_version.outputs.version }}**\n\nThis PR is ready to merge. After merging, a GitHub Release will be created automatically.'
+            })
+
+  create-release:
+    name: Create Release
+    # Only run when PR is merged
+    if: |
+      github.event.action == 'closed' && 
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          NEW_VERSION="${{ steps.new_version.outputs.version }}"
+          VERSION="${{ steps.version.outputs.version }}"
           
-          git tag "v$NEW_VERSION"
-          git push origin "v$NEW_VERSION"
+          # Check if tag already exists
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists, skipping"
+            exit 0
+          fi
           
-          gh release create "v$NEW_VERSION" \
-            --title "v$NEW_VERSION" \
-            --generate-notes
+          # Tag the actual commit on main
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
+          gh release create "v$VERSION" --title "v$VERSION" --generate-notes
 
       - name: Summary
         run: |
-          echo "## Release v${{ steps.new_version.outputs.version }} Created" >> $GITHUB_STEP_SUMMARY
-          echo "**Version bump:** ${{ steps.bump_type.outputs.type }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Version files updated" >> $GITHUB_STEP_SUMMARY
-          echo "- Git tag created" >> $GITHUB_STEP_SUMMARY
+          echo "## 🚀 Release v${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Git tag created on main" >> $GITHUB_STEP_SUMMARY
           echo "- GitHub Release published" >> $GITHUB_STEP_SUMMARY
-          echo "- Vercel will auto-deploy" >> $GITHUB_STEP_SUMMARY
+          echo "- Vercel deploying..." >> $GITHUB_STEP_SUMMARY
