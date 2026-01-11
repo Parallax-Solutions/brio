@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/chart"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useTranslations, useLocale } from "@/lib/i18n/context"
+import { formatMonth } from "@/lib/utils/dates"
 import { Currency } from "@prisma/client"
 
 interface IncomeSource {
@@ -37,6 +38,7 @@ interface ChartIncomeSourcesProps {
   totalIncome: number
   currency?: Currency
   isLoading?: boolean
+  periodStart?: Date
 }
 
 // Vibrant color palette for multiple income sources
@@ -56,9 +58,13 @@ export function ChartIncomeSources({
   totalIncome,
   currency = "CRC",
   isLoading,
+  periodStart,
 }: ChartIncomeSourcesProps) {
   const t = useTranslations("dashboard")
   const locale = useLocale()
+  // Use the server-provided period start to ensure consistency with data
+  const periodDate = periodStart ? new Date(periodStart) : new Date()
+  const currentMonth = formatMonth(periodDate, locale === "es" ? "es-CR" : "en-US")
 
   const chartData = React.useMemo(() => 
     incomes.map((income, index) => ({
@@ -141,7 +147,7 @@ export function ChartIncomeSources({
         <Card className="flex flex-col h-full transition-shadow hover:shadow-md">
           <CardHeader className="items-center pb-0">
             <CardTitle className="text-base">{t("incomeSources")}</CardTitle>
-            <CardDescription>{t("activeIncome")}</CardDescription>
+            <CardDescription className="capitalize">{currentMonth}</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 flex items-center justify-center pb-0">
             <div className="text-center text-muted-foreground py-8">
@@ -163,14 +169,14 @@ export function ChartIncomeSources({
       <Card className="flex flex-col h-full transition-shadow hover:shadow-md">
         <CardHeader className="items-center pb-0">
           <CardTitle className="text-base">{t("incomeSources")}</CardTitle>
-          <CardDescription>{t("activeIncome")}</CardDescription>
+          <CardDescription className="capitalize">{currentMonth}</CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 pb-0">
+        <CardContent className="flex-1 pb-0 px-2 sm:px-6">
           <ChartContainer
             config={chartConfig}
-            className="mx-auto aspect-square max-h-[200px]"
+            className="mx-auto aspect-square max-h-[180px] sm:max-h-[200px]"
           >
-            <PieChart>
+            <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
               <ChartTooltip
                 cursor={false}
                 content={
@@ -190,8 +196,8 @@ export function ChartIncomeSources({
                 data={chartData}
                 dataKey="value"
                 nameKey="name"
-                innerRadius={50}
-                outerRadius={80}
+                innerRadius={40}
+                outerRadius={65}
                 strokeWidth={2}
                 stroke="hsl(var(--background))"
               >
@@ -210,15 +216,15 @@ export function ChartIncomeSources({
                         >
                           <tspan
                             x={viewBox.cx}
-                            y={(viewBox.cy || 0) - 6}
-                            className="fill-foreground text-base font-bold"
+                            y={(viewBox.cy || 0) - 4}
+                            className="fill-foreground text-sm font-bold"
                           >
                             {formatCompact(totalIncome)}
                           </tspan>
                           <tspan
                             x={viewBox.cx}
-                            y={(viewBox.cy || 0) + 12}
-                            className="fill-muted-foreground text-[10px]"
+                            y={(viewBox.cy || 0) + 10}
+                            className="fill-muted-foreground text-[9px]"
                           >
                             {t("monthly")}
                           </tspan>
@@ -230,7 +236,7 @@ export function ChartIncomeSources({
               </Pie>
               <ChartLegend
                 content={<ChartLegendContent nameKey="name" />}
-                className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+                className="flex-wrap justify-center gap-x-3 gap-y-1 text-xs"
               />
             </PieChart>
           </ChartContainer>

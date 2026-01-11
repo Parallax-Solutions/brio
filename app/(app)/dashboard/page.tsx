@@ -295,6 +295,7 @@ export default async function DashboardPage() {
             subscriptionsTotal={toDisplayAmount(subscriptionsTotal, baseCurrency)}
             extraExpensesTotal={toDisplayAmount(totalExpenses, baseCurrency)}
             currency={baseCurrency}
+            periodStart={start}
           />
           <ChartIncomeSources
             incomes={incomes.map(inc => ({
@@ -305,6 +306,7 @@ export default async function DashboardPage() {
             }))}
             totalIncome={toDisplayAmount(totalIncome, baseCurrency)}
             currency={baseCurrency}
+            periodStart={start}
           />
         </div>
       </div>
