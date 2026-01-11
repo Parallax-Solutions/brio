@@ -112,17 +112,27 @@ Each commit to `dev` gets a unique preview URL:
 
 ### Automatic Release Process
 
-Production deployments are fully automated. When a PR is merged to `main`:
+Production deployments are fully automated with a single Vercel deploy:
 
-1. **Auto Release** workflow triggers
-2. Version is automatically bumped based on:
-   - PR labels: `major`, `minor`, or `patch`
-   - PR title: `feat:` → minor, `fix:` → patch, `breaking:` → major
-   - Default: `minor` (for dev → main merges)
-3. `package.json` and `VERSION` files are updated
-4. Git tag is created (e.g., `v0.2.0`)
-5. GitHub Release is published automatically
-6. Vercel deploys to production
+1. Create PR from `dev` → `main`
+2. **Auto Release** workflow automatically bumps version **in the PR**
+3. Review and merge the PR
+4. Vercel deploys to production (single deploy)
+5. GitHub Release is created with git tag
+
+### Version Bump Logic
+
+Version is determined by PR labels or title:
+
+| Trigger | Version Bump |
+|---------|-------------|
+| Label: `major` | 0.1.0 → 1.0.0 |
+| Label: `minor` | 0.1.0 → 0.2.0 |
+| Label: `patch` | 0.1.0 → 0.1.1 |
+| Title: `feat:` | minor |
+| Title: `fix:` | patch |
+| Title: `breaking:` | major |
+| Default | minor |
 
 ### Release Workflow
 
@@ -130,24 +140,32 @@ Production deployments are fully automated. When a PR is merged to `main`:
 
 1. Go to GitHub → **Pull requests** → **New pull request**
 2. Set **base:** `main` ← **compare:** `dev`
-3. Add a descriptive title (this appears in release notes)
+3. Add a descriptive title (e.g., `feat: Release v0.2.0`)
 4. Optionally add labels: `major`, `minor`, or `patch`
 5. Click **Create pull request**
 
-#### Step 2: Review and Merge
+#### Step 2: Wait for Version Bump
 
-1. Review the changes
+The workflow automatically:
+
+- Detects the PR from `dev`
+- Bumps version based on labels/title
+- Commits the version bump to the PR
+- Comments on the PR with the new version
+
+#### Step 3: Review and Merge
+
+1. Review the changes (including version bump commit)
 2. Get approval (if branch protection is enabled)
 3. **Merge the PR**
 
-#### Step 3: Automatic (No Action Needed)
+#### Step 4: Automatic Release
 
-After merge, the workflow automatically:
+After merge:
 
-- Bumps version → commits to main
-- Creates git tag → pushes tag
-- Creates GitHub Release with changelog
-- Vercel deploys to production
+- Vercel deploys to production (single deploy)
+- Git tag is created (e.g., `v0.2.0`)
+- GitHub Release is published with auto-generated notes
 
 ### Manual Release (Optional)
 
