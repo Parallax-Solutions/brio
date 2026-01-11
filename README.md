@@ -3,7 +3,7 @@
 [![CI](https://github.com/Parallax-Solutions/brio/actions/workflows/ci.yml/badge.svg)](https://github.com/Parallax-Solutions/brio/actions/workflows/ci.yml)
 [![Production](https://img.shields.io/badge/Production-brio.parallaxsolutions.dev-00C853?logo=vercel&logoColor=white)](https://brio.parallaxsolutions.dev)
 [![Development](https://img.shields.io/badge/Development-Preview-blue?logo=vercel&logoColor=white)](https://brio-git-dev-gustavoro19s-projects.vercel.app)
-[![Version](https://img.shields.io/badge/version-0.2.1--alpha-orange)](https://github.com/Parallax-Solutions/brio/releases)
+[![Version](https://img.shields.io/badge/version-0.2.2--alpha-orange)](https://github.com/Parallax-Solutions/brio/releases)
 
 A production-ready multi-currency budgeting web application, built with Next.js, TypeScript, and PostgreSQL. Manage your money with energy, live your life with spirit.
 
@@ -362,7 +362,7 @@ Brio uses automated CI/CD with GitHub Actions and Vercel for seamless deployment
 
 Brio uses [Semantic Versioning](https://semver.org/) (SemVer): `MAJOR.MINOR.PATCH[-PRERELEASE]`
 
-**Current version**: `0.2.1`
+**Current version**: `0.2.2`
 
 #### Version Script (`scripts/version.js`)
 
