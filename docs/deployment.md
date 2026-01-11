@@ -124,15 +124,15 @@ Production deployments are fully automated with a single Vercel deploy:
 
 Version is determined by PR labels or title:
 
-| Trigger | Version Bump |
-|---------|-------------|
-| Label: `major` | 0.1.0 → 1.0.0 |
-| Label: `minor` | 0.1.0 → 0.2.0 |
-| Label: `patch` | 0.1.0 → 0.1.1 |
-| Title: `feat:` | minor |
-| Title: `fix:` | patch |
-| Title: `breaking:` | major |
-| Default | minor |
+| Trigger            | Version Bump  |
+| ------------------ | ------------- |
+| Label: `major`     | 0.1.0 → 1.0.0 |
+| Label: `minor`     | 0.1.0 → 0.2.0 |
+| Label: `patch`     | 0.1.0 → 0.1.1 |
+| Title: `feat:`     | minor         |
+| Title: `fix:`      | patch         |
+| Title: `breaking:` | major         |
+| Default            | minor         |
 
 ### Release Workflow
 

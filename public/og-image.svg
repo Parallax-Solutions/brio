@@ -1,0 +1,36 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+  
+  <!-- Gradient background circles -->
+  <circle cx="200" cy="150" r="300" fill="url(#gradient1)" opacity="0.3"/>
+  <circle cx="1000" cy="500" r="350" fill="url(#gradient2)" opacity="0.2"/>
+  
+  <!-- Logo container -->
+  <rect x="520" y="180" width="80" height="80" rx="16" fill="#3b82f6"/>
+  <path d="M545 210 L575 210 L575 250 L545 250 Z" fill="white"/>
+  <path d="M550 220 L570 220 M550 230 M550 240 L565 240" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Title -->
+  <text x="600" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="white" text-anchor="middle">Brio</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#a1a1aa" text-anchor="middle">App de Finanzas Personales</text>
+  
+  <!-- Costa Rica badge -->
+  <rect x="460" y="420" width="280" height="40" rx="20" fill="#1e293b"/>
+  <text x="600" y="447" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#22c55e" text-anchor="middle">🇨🇷 Hecho en Costa Rica</text>
+  
+  <!-- Features -->
+  <text x="600" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="#71717a" text-anchor="middle">Multi-Moneda • Gastos Recurrentes • Suscripciones • Ahorro</text>
+  
+  <defs>
+    <radialGradient id="gradient1" cx="0" cy="0" r="1" gradientTransform="translate(200 150) scale(300)">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="gradient2" cx="0" cy="0" r="1" gradientTransform="translate(1000 500) scale(350)">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+</svg>
