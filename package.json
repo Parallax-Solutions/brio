@@ -1,6 +1,6 @@
 {
   "name": "brio",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha",
   "private": true,
   "packageManager": "pnpm@10.27.0",
   "scripts": {
@@ -8,11 +8,18 @@
     "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "type-check": "tsc --noEmit",
+    "test": "echo 'No tests yet'",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "version": "node scripts/version.js",
+    "version:patch": "npm version patch --no-git-tag-version",
+    "version:minor": "npm version minor --no-git-tag-version",
+    "version:major": "npm version major --no-git-tag-version"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.6.1",

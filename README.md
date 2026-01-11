@@ -194,6 +194,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
+- `pnpm type-check` - Run TypeScript type checking
+- `pnpm test` - Run tests (placeholder)
+- `pnpm version` - Version management utilities
 - `pnpm db:generate` - Generate Prisma Client
 - `pnpm db:push` - Push schema changes to database
 - `pnpm db:migrate` - Run database migrations
@@ -259,6 +262,8 @@ hooks/                 # Custom React hooks
 
 Comprehensive documentation is available in the `/docs` directory:
 
+- `deployment.md` - Complete deployment guide and CI/CD setup
+- `vercel-setup.md` - Vercel configuration and preview deployments
 - `mission.md` - Product mission and goals
 - `vision.md` - Long-term vision
 - `roadmap.md` - Development roadmap
@@ -313,7 +318,43 @@ Comprehensive documentation is available in the `/docs` directory:
 3. Update seed script if needed
 4. Update `docs/data-model.md`
 
-## Production Deployment
+## Deployment
+
+Brio uses automated CI/CD with GitHub Actions and Vercel for seamless deployments.
+
+### Environments
+
+- **Development** (`dev` branch): Auto-deploys to https://brio-dev.vercel.app
+- **Production** (`main` branch): Versioned releases to https://brio.parallaxsolutions.dev
+
+### Version Management
+
+Current version: **0.1.0-alpha**
+
+```bash
+# Check version
+pnpm version
+
+# Version commands
+pnpm version:patch    # Bug fixes (0.1.0 → 0.1.1)
+pnpm version:minor    # New features (0.1.0 → 0.2.0)
+pnpm version:major    # Breaking changes (0.1.0 → 1.0.0)
+```
+
+### Development Deployment
+
+Push to `dev` branch → Automatic deployment with database migration.
+
+### Production Deployment
+
+1. **Create Release**: Use GitHub Actions "Create Release" workflow
+2. **Version Bump**: Select patch/minor/major version increment
+3. **Merge PR**: Approve and merge the auto-generated release PR
+4. **Publish Release**: Create GitHub release to trigger production deployment
+
+See `docs/deployment.md` for detailed deployment instructions.
+
+### Manual Production Deployment
 
 1. Set up PostgreSQL database
 2. Set environment variables
