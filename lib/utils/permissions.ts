@@ -77,8 +77,11 @@ export function canModifyUser(actorRole: Role, targetRole: Role): boolean {
  */
 export function canDeleteUser(actorRole: Role, targetRole: Role): boolean {
   if (!hasPermission(actorRole, 'users:delete')) return false;
-  // Only admins can delete, and they can delete anyone except themselves (checked elsewhere)
-  return actorRole === 'ADMIN';
+  // Admins can delete anyone, but can't delete other admins (protect admin accounts)
+  if (actorRole === 'ADMIN') {
+    return targetRole !== 'ADMIN';
+  }
+  return false;
 }
 
 /**
@@ -106,7 +109,11 @@ export function canChangeRole(actorRole: Role, targetRole: Role, newRole: Role):
   // Only admins can change roles
   if (actorRole !== 'ADMIN') return false;
   
-  // Can't promote someone to admin unless you're admin
-  // Admins can do anything
+  // Can't change another admin's role
+  if (targetRole === 'ADMIN') return false;
+  
+  // Can't promote to admin (reserved)
+  if (newRole === 'ADMIN') return false;
+  
   return true;
 }

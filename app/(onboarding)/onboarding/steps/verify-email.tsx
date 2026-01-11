@@ -23,25 +23,29 @@ export function VerifyEmailStep({ onComplete }: VerifyEmailStepProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
-  const [emailSent, setEmailSent] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const emailSentRef = useRef(false);
 
+  // Send initial verification email on mount
   useEffect(() => {
-    // Send initial verification email only once
-    if (!emailSent) {
-      setEmailSent(true);
-      handleResend(true);
-    }
-  }, [emailSent]);
+    if (emailSentRef.current) return;
+    emailSentRef.current = true;
 
-  useEffect(() => {
-    if (resendCooldown > 0) {
-      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [resendCooldown]);
+    const sendInitialEmail = async () => {
+      setIsResending(true);
+      const result = await resendVerificationEmail();
+      setIsResending(false);
+      if (result.success) {
+        setResendCooldown(60);
+      } else {
+        toast.error(result.error || t('sendError'));
+      }
+    };
 
-  const handleResend = async (initial = false) => {
+    sendInitialEmail();
+  }, [t]);
+
+  const handleResend = async () => {
     if (resendCooldown > 0) return;
     
     setIsResending(true);
@@ -49,14 +53,19 @@ export function VerifyEmailStep({ onComplete }: VerifyEmailStepProps) {
     setIsResending(false);
 
     if (result.success) {
-      if (!initial) {
-        toast.success(t('codeSent'));
-      }
+      toast.success(t('codeSent'));
       setResendCooldown(60);
     } else {
       toast.error(result.error || t('sendError'));
     }
   };
+
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
 
   const handleCodeChange = (index: number, value: string) => {
     if (value.length > 1) {
