@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { getServerAuthSession } from "@/lib/get-server-session";
 import { db } from "@/lib/config/db";
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 
 const geistSans = Geist({
@@ -81,6 +82,7 @@ export default async function RootLayout({
             <I18nProvider locale={locale} messages={messages}>
               {children}
               <Analytics />
+              <SpeedInsights />
               <Toaster />
             </I18nProvider>
           </ThemeProvider>
