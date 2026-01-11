@@ -90,8 +90,21 @@ jobs:
         if: steps.check.outputs.already_bumped == 'false'
         run: |
           NEW_VERSION="${{ steps.new_version.outputs.version }}"
+          OLD_VERSION=$(node -p "require('./package.json').version")
+          
+          # Update package.json
           npm version $NEW_VERSION --no-git-tag-version
+          
+          # Update VERSION file
           echo "$NEW_VERSION" > VERSION
+          
+          # Update README badge (version-X.X.X--alpha or version-X.X.X)
+          sed -i '' "s/version-[0-9]*\.[0-9]*\.[0-9]*[^-]*/version-$NEW_VERSION/" README.md 2>/dev/null || \
+          sed -i "s/version-[0-9]*\.[0-9]*\.[0-9]*[^-]*/version-$NEW_VERSION/" README.md
+          
+          # Update README current version text
+          sed -i '' "s/\*\*Current version\*\*: \`[^\`]*\`/**Current version**: \`$NEW_VERSION\`/" README.md 2>/dev/null || \
+          sed -i "s/\*\*Current version\*\*: \`[^\`]*\`/**Current version**: \`$NEW_VERSION\`/" README.md
 
       - name: Commit version bump
         if: steps.check.outputs.already_bumped == 'false'
@@ -99,7 +112,7 @@ jobs:
           NEW_VERSION="${{ steps.new_version.outputs.version }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json VERSION
+          git add package.json VERSION README.md
           git commit -m "chore: bump version to $NEW_VERSION"
           git push
 
