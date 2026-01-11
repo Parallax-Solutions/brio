@@ -121,10 +121,15 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === 'google' && user.id) {
         const googleProfile = profile as { picture?: string } | undefined;
         if (googleProfile?.picture) {
-          await db.user.update({
-            where: { id: user.id },
-            data: { image: googleProfile.picture },
-          });
+          try {
+            await db.user.update({
+              where: { id: user.id },
+              data: { image: googleProfile.picture },
+            });
+          } catch (error) {
+            // Silently fail - user image update is not critical
+            console.error('Failed to update Google profile image:', error);
+          }
         }
       }
     },
